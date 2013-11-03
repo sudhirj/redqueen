@@ -9,6 +9,7 @@ describe RedQueen::Client do
 		@rq.get('key1').should == 'abc'
 		@rq.get(['mod1','key1']).should == 'def'
 		@rq.get('objkey1').should == {"hello" => "world"}
+		@rq.get('non_existent_key').should be_nil
 	end
 
 	it 'should set' do

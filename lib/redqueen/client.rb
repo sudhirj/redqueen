@@ -22,6 +22,7 @@ module RedQueen
 		end
 
 		def unpack item
+			return nil if item.nil?
 			MessagePack.unpack item
 		end
 	end
