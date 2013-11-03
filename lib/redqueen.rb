@@ -12,7 +12,7 @@ module RedQueen
   	def initialize servers
 			@clients = [servers].reject{|s| s.blank?}.flatten.map do |server|
 				parts = server.split(':')
-				client = Redis.new host: (parts[0] || 'localhost'), port: (parts[1].to_i || 6379 rescue 6379)
+				client = ::Redis.new host: (parts[0] || 'localhost'), port: (parts[1].to_i || 6379 rescue 6379)
 				RedQueen::Client.new prefix, client
 			end
   	end
