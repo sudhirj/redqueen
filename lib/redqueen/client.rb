@@ -9,8 +9,17 @@ module RedQueen
 			unpack @client.get prefix(key)
 		end
 
+		def mget keys
+			return [] if keys.nil? or keys.empty?
+			@client.mget(keys.map{|k| prefix(k)}).map{|v| unpack(v)}
+		end
+
 		def set key, value
 			@client.set prefix(key), value.to_msgpack
+		end
+
+		def mset hash
+			@client.mset hash.flat_map{|k, v| [prefix(k), v.to_msgpack]}
 		end
 
 		def select index
