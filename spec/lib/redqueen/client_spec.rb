@@ -41,4 +41,33 @@ describe RedQueen::Client do
 		@rq.mset({['m1', 'k1'] => 'a1', "k2" => 'a2', 24 => 42})
 		@rq.mget([['m1', 'k1'], 'k2', '24']).should == ['a1', 'a2', 42]
 	end
+
+	it 'should zadd' do
+		@rq.zadd 'myzset', {score: 2, member: 'two'}
+		@rq.zadd 'myzset', {score: 1, member: 'one'}, {score: 5, member: 'five'}
+		@rq.zadd 'myzset', [{score: 3, member: 'three'}, {score: 4, member: 'four'}]
+		@redis.zrange('TestApp:testenv:myzset', 0, 4).map{|i| MessagePack.unpack(i)}.should == ['one', 'two', 'three', 'four', 'five']
+	end
+
+	it 'should zrange' do
+		@rq.zadd 'myzset', {score: 2, member: 'two'}
+		@rq.zadd 'myzset', {score: 1, member: 'one'}, {score: 3, member: 'three'}
+		@rq.zrange('myzset', 0, 100).should == ['one', 'two', 'three']
+	end
+
+	it 'should zrevrange' do
+		@rq.zadd 'myzset', {score: 2, member: 'two'}
+		@rq.zadd 'myzset', {score: 1, member: 'one'}, {score: 3, member: 'three'}
+		@rq.zrevrange('myzset', 0, 2).should == ['three', 'two', 'one']
+
+		@rq.zrevrange('nonexistentkey', 0, -1).should == []
+	end
+
+	it 'should zinterstore' do
+		@rq.zadd ['myset', 1], {score: 2, member: 'two'}, {score: 10, member: 'one'}
+		@rq.zadd ['myset', 2], {score: 1, member: 'one'}, {score: 3, member: 'three'}
+		@rq.zinterstore 'myset', [['myset', 1], ['myset', 2]]
+		@rq.zrange('myset', 0, -1).should == ['one']
+	end
+
 end

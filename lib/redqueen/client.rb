@@ -22,6 +22,22 @@ module RedQueen
 			@client.mset hash.flat_map{|k, v| [prefix(k), v.to_msgpack]}
 		end
 
+		def zadd key, *args
+			@client.zadd prefix(key), args.flatten.map{|item| [item[:score], item[:member].to_msgpack]}
+		end
+
+		def zrange key, start, finish
+			@client.zrange(prefix(key), start, finish).map{|i| unpack(i)}
+		end
+
+		def zrevrange key, start, finish
+			@client.zrevrange(prefix(key), start, finish).map{|i| unpack(i)}
+		end
+
+		def zinterstore key, sources
+			@client.zinterstore prefix(key), sources.map{|s| prefix(s)}
+		end
+
 		def select index
 			@client.select index
 		end
