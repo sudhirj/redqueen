@@ -42,6 +42,12 @@ module RedQueen
 			@client.select index
 		end
 
+		def pipelined
+			@client.pipelined do
+				yield self
+			end
+		end
+
 		def prefix key
 			[@prefix, key].join(':')
 		end

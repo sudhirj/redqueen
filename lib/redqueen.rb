@@ -7,7 +7,9 @@ require 'active_support/all'
 module RedQueen
   class Queen
   	attr_reader :clients
-  	delegate :get, :set, :mget, :mset, :zadd, :zrange, :zrevrange, :zinterstore, to: :client
+  	delegate :get, :set, :mget, :mset, 
+              :zadd, :zrange, :zrevrange, :zinterstore,
+              :pipelined, to: :client
 
   	def initialize servers
 			@clients = [servers].reject{|s| s.blank?}.flatten.map do |server|

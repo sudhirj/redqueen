@@ -70,4 +70,13 @@ describe RedQueen::Client do
 		@rq.zrange('myset', 0, -1).should == ['one']
 	end
 
+	it 'should pipeline' do
+		results = @rq.pipelined do |client|
+			client.zadd 'pipelineadd', {score: 2, member: 'two'}
+			client.zadd 'pipelineadd', {score: 1, member: 'one'}, {score: 3, member: 'three'}				
+		end
+		results.should == [1,2]
+		@rq.zrange('pipelineadd', 0, 100).should == ['one', 'two', 'three']
+	end
+
 end
